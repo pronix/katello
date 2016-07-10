@@ -4,7 +4,8 @@ module Katello
 
     ALLOWED_REPOSITORY_TYPES = [Repository::YUM_TYPE,
                                 Repository::DOCKER_TYPE,
-                                Repository::OSTREE_TYPE
+                                Repository::OSTREE_TYPE,
+                                Repository::PYTHON_TYPE
                                ].freeze
 
     belongs_to :content_view, :inverse_of => :content_view_repositories,

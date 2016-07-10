@@ -32,6 +32,8 @@ module Actions
             [Runcible::Models::DockerDistributor]
           when ::Katello::Repository::OSTREE_TYPE
             [Runcible::Models::OstreeDistributor]
+          when ::Katello::Repository::PYTHON_TYPE
+            [Runcible::Models::PythonDistributor]
           end
         end
       end

@@ -30,6 +30,7 @@ node :counts do |env|
     counts[:yum_repositories] = repos.yum_type.count
     counts[:docker_repositories] = repos.docker_type.count
     counts[:ostree_repositories] = repos.ostree_type.count
+    counts[:python_repositories] = repos.python_type.count
     counts[:products] = env.organization.products.enabled.count
   end
   counts

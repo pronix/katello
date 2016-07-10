@@ -141,6 +141,8 @@ module Katello
 
           options[:feed] = self.url if self.respond_to?(:url)
           Runcible::Models::OstreeImporter.new(options)
+        when Repository::PYTHON_TYPE
+          Runcible::Models::PythonImporter.new(importer_ssl_options(capsule).merge(options))
         else
           fail _("Unexpected repo type %s") % self.content_type
         end
@@ -243,6 +245,12 @@ module Katello
                       :relative_path => relative_path }
           dist = Runcible::Models::OstreeDistributor.new(options)
           distributors = [dist]
+        when Repository::PYTHON_TYPE
+          options = { :id => self.pulp_id,
+                      :auto_publish => true,
+                      :relative_path => relative_path }
+          dist = Runcible::Models::PythonDistributor.new(options)
+          distributors = [dist]
         else
           fail _("Unexpected repo type %s") % self.content_type
         end
@@ -262,6 +270,8 @@ module Katello
           Runcible::Models::DockerImporter::ID
         when Repository::OSTREE_TYPE
           Runcible::Models::OstreeImporter::ID
+        when Repository::PYTHON_TYPE
+          Runcible::Models::PythonImporter::ID
         else
           fail _("Unexpected repo type %s") % self.content_type
         end
@@ -710,6 +720,8 @@ module Katello
           "docker_manifest"
         when Repository::OSTREE_TYPE
           "ostree"
+        when Repository::PYTHON_TYPE
+          "python"
         when Repository::FILE_TYPE
           "iso"
         end
@@ -758,6 +770,10 @@ module Katello
 
       def ostree?
         self.content_type == Repository::OSTREE_TYPE
+      end
+
+      def python?
+        self.content_type == Repository::PYTHON_TYPE
       end
 
       def capsule_download_policy
@@ -833,6 +849,8 @@ module Katello
         "#{scheme}://#{pulp_uri.host.downcase}/pulp/puppet/#{pulp_id}/"
       elsif ostree?
         "#{scheme}://#{pulp_uri.host.downcase}/pulp/ostree/web/#{pulp_id}/"
+      elsif python?
+        "#{scheme}://#{pulp_uri.host.downcase}/pulp/python/web/#{pulp_id}/"
       else
         "#{scheme}://#{pulp_uri.host.downcase}/pulp/repos/#{relative_path}/"
       end
@@ -844,6 +862,7 @@ module Katello
       self.index_db_docker_manifests
       self.index_db_puppet_modules
       self.index_db_package_groups
+      self.index_db_python_groups
       self.index_db_ostree_branches if Katello::RepositoryTypeManager.find(Repository::OSTREE_TYPE).present?
       self.import_distribution_data
       true

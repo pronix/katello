@@ -40,6 +40,8 @@ module Actions
             docker_importer
           when ::Katello::Repository::OSTREE_TYPE
             ostree_importer
+          when ::Katello::Repository::PYTHON_TYPE
+            python_importer
           else
             fail _("Unexpected repo type %s") % input[:content_type]
           end
@@ -63,6 +65,15 @@ module Actions
 
         def ostree_importer
           importer = Runcible::Models::OstreeImporter.new
+          importer.feed            = input[:feed]
+          importer.ssl_ca_cert     = input[:ssl_ca_cert]
+          importer.ssl_client_cert = input[:ssl_client_cert]
+          importer.ssl_client_key  = input[:ssl_client_key]
+          importer
+        end
+
+        def python_importer
+          importer = Runcible::Models::PythonImporter.new
           importer.feed            = input[:feed]
           importer.ssl_ca_cert     = input[:ssl_ca_cert]
           importer.ssl_client_cert = input[:ssl_client_cert]
@@ -102,6 +113,8 @@ module Actions
             distributors = [docker_distributor]
           when ::Katello::Repository::OSTREE_TYPE
             distributors = [ostree_distributor]
+          when ::Katello::Repository::PYTHON_TYPE
+            distributors = [python_distributor]
           else
             fail _("Unexpected repo type %s") % input[:content_type]
           end
@@ -163,6 +176,13 @@ module Actions
                       relative_path: input[:path],
                       auto_publish: true }
           Runcible::Models::OstreeDistributor.new(options)
+        end
+
+        def python_distributor
+          options = { id: input[:pulp_id],
+                      relative_path: input[:path],
+                      auto_publish: true }
+          Runcible::Models::PythonDistributor.new(options)
         end
       end
     end

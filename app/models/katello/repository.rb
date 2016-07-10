@@ -22,6 +22,7 @@ module Katello
     PUPPET_TYPE = 'puppet'.freeze
     DOCKER_TYPE = 'docker'.freeze
     OSTREE_TYPE = 'ostree'.freeze
+    PYTHON_TYPE = 'python'.freeze
 
     CHECKSUM_TYPES = %w(sha1 sha256).freeze
 
